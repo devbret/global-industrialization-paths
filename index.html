@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      rel="icon"
+      href="https://hosting.photobucket.com/bbcfb0d4-be20-44a0-94dc-65bff8947cf2/ff4a3384-baa9-4bc2-94c9-6bff4e3d3ea0.png"
+      type="image/x-icon"
+    />
+    <title>Global Industrialization Paths - Bret Bernhoft</title>
+    <meta
+      name="description"
+      content="Transforms a country-level CSV dataset into a structured JSON time series and renders it as an animated, interactive D3 bubble chart showing how countries move over time across two economic indicators."
+    />
+    <meta name="author" content="Bret Bernhoft" />
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="hud">
+        <div class="left card">
+          <div class="titleblock">
+            <div class="title">
+              Global Industrialization Paths: GDP, Manufacturing Share And
+              Growth Over Time
+            </div>
+          </div>
+        </div>
+
+        <div class="right card">
+          <button id="playBtn">Play</button>
+          <button id="pauseBtn" disabled>Pause</button>
+          <input
+            id="yearSlider"
+            type="range"
+            min="0"
+            max="0"
+            value="0"
+            step="1"
+          />
+          <div class="year-readout" id="yearReadout">-</div>
+        </div>
+      </div>
+
+      <div class="watermark" id="watermark">-</div>
+      <svg id="chart"></svg>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="/main.js"></script>
+  </body>
+</html>
