@@ -10,6 +10,48 @@ Takes a country-level economic CSV file and turns it into a clean time series to
 
 On the frontend, a responsive D3 visualization animates these bubbles through time with smooth transitions, tooltips and playback controls. Users can advance year-by-year, autoplay the timeline or pause to inspect individual countries in detail. The result is a clear view of how countries evolve over time across multiple economic dimensions.
 
-## Data Source
+## Set Up Instructions
 
-Here is [a link to the FAOSTAT data](https://www.fao.org/faostat/en/#data/MK) this application relies on.
+Below are the required software programs and instructions for installing and using this application.
+
+### Programs Needed
+
+- [Git](https://git-scm.com/downloads)
+
+- [Python](https://www.python.org/downloads/)
+
+### Steps
+
+1. Install the above programs
+
+2. Open a terminal
+
+3. Clone this repository using `git` by running the following command: `git clone git@github.com:devbret/global-industrialization-paths.git`
+
+4. Navigate to the repo's directory by running: `cd global-industrialization-paths`
+
+5. Create a virtual environment with this command: `python3 -m venv venv`
+
+6. Activate your virtual environment using: `source venv/bin/activate`
+
+7. Download the [source data](https://www.fao.org/faostat/en/#data/MK) as a CSV file
+
+8. Place the `Macro-Statistics_Key_Indicators_E_All_Data.csv` file into the root directory of this repo and rename it `data.csv`
+
+9. Process the raw data using the Python script by running the following command: `python3 app.py`
+
+10. Launch the application's frontend by starting a Python server with the following command: `python3 -m http.server`
+
+11. Access the heatmap visualization in a browser by visiting: `http://localhost:8000`
+
+12. Explore and enjoy
+
+## Other Considerations
+
+This project repo is intended to demonstrate an ability to do the following:
+
+- Transform economic CSV data into a structured JSON format
+
+- Animate economic indicators over time for exploratory data analysis
+
+If you have any questions or would like to collaborate, please reach out either on GitHub or via [my website](https://bretbernhoft.com/).
