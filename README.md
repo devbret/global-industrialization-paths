@@ -36,15 +36,17 @@ Below are the required software programs and instructions for installing and usi
 
 7. Download the [source data](https://www.fao.org/faostat/en/#data/MK) as a CSV file
 
-8. Place the `Macro-Statistics_Key_Indicators_E_All_Data.csv` file into the root directory of this repo and rename it `data.csv`
+8. Place the `Macro-Statistics_Key_Indicators_E_All_Data.csv` file into the root directory of this repo a
 
-9. Process the raw data using the Python script by running the following command: `python3 app.py`
+9. Rename the newly added `.csv` file to `data.csv`
 
-10. Launch the application's frontend by starting a Python server with the following command: `python3 -m http.server`
+10. Process the raw data using the Python script by running the following command: `python3 app.py`
 
-11. Access the heatmap visualization in a browser by visiting: `http://localhost:8000`
+11. Launch the application's frontend: `python3 -m http.server`
 
-12. Explore and enjoy
+12. Access the visualization in a browser by visiting: `http://localhost:8000`
+
+13. Explore and enjoy
 
 ## Other Considerations
 
