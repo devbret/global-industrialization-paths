@@ -54,6 +54,10 @@ Below are the required software programs and instructions for installing and usi
 
 ## Other Considerations
 
+Below are additional details about this project, beyond the steps needed to install and run it. The first subsection outlines technical abilities this repository is meant to demonstrate, while the second explains the license governing how the code may be reused and where to reach out with questions.
+
+### Abilities Demonstrated
+
 This project repo is intended to demonstrate an ability to do the following:
 
 - Process global economic CSV data into a JSON format for a D3 bubble chart visualization
@@ -61,5 +65,9 @@ This project repo is intended to demonstrate an ability to do the following:
 - Provide an animated timeline for exploring industrialization and economic development across countries
 
 - Turn source data into a frontend to let users play, pause and inspect country-level metrics
+
+### License Information
+
+This repository is released under the MIT License. Meaning you are free to use, copy, modify, merge, publish, distribute, sublicense and sell copies of this software, including for commercial purposes, so long as the copyright and permission notices are included with any substantial portion of the code you reuse. The software is provided "as is", without a warranty of any kind, and the author is not liable for any claim or damages arising from its use.
 
 If you have any questions or would like to collaborate, please reach out either on GitHub or via [my website](https://bretbernhoft.com/).
