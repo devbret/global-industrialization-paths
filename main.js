@@ -1,3 +1,35 @@
+const statusEl = document.getElementById("status");
+const statusTitle = document.getElementById("statusTitle");
+const statusDetail = document.getElementById("statusDetail");
+
+function showLoading(title, detail) {
+  statusEl.classList.remove("error");
+  statusEl.setAttribute("aria-live", "polite");
+  statusTitle.textContent = title;
+  statusDetail.textContent = detail ?? "";
+  statusEl.hidden = false;
+}
+
+function showError(title, detail) {
+  statusEl.classList.add("error");
+  statusEl.setAttribute("aria-live", "assertive");
+  statusTitle.textContent = title;
+  statusDetail.textContent = detail ?? "";
+  statusEl.hidden = false;
+}
+
+function hideStatus() {
+  statusEl.hidden = true;
+}
+
+if (typeof d3 === "undefined") {
+  showError(
+    "D3 failed to load.",
+    "The chart library is served from cdn.jsdelivr.net and could not be reached. Check your network connection and reload.",
+  );
+  throw new Error("D3 failed to load; aborting startup.");
+}
+
 const DATA_URL = "./bubble_data.json";
 
 const STEP_YEARS = 1;
@@ -154,7 +186,6 @@ const pauseBtn = document.getElementById("pauseBtn");
 const yearSlider = document.getElementById("yearSlider");
 const yearReadout = document.getElementById("yearReadout");
 const watermark = document.getElementById("watermark");
-const meta = document.getElementById("meta");
 
 let data = null;
 let years = [];
@@ -283,7 +314,7 @@ function labelText(d) {
   const s = keys.nameKey ? (d[keys.nameKey] ?? "") : "";
   const MAX = 18;
   const str = String(s);
-  return str.length > MAX ? str.slice(0, MAX - 1) + "…" : str;
+  return str.length > MAX ? str.slice(0, MAX - 3) + "..." : str;
 }
 
 function renderYear(year, animate) {
@@ -367,57 +398,95 @@ function renderYear(year, animate) {
 }
 
 (async function init() {
+  showLoading("Loading data", "Reading bubble_data.json.");
   resize();
 
-  data = await fetch(DATA_URL).then((r) => r.json());
-  years = data.years || [];
-
-  let sample = null;
-  for (const y of years) {
-    const frame = data.byYear?.[String(y)] || [];
-    if (frame.length) {
-      sample = frame[0];
-      break;
+  try {
+    let res;
+    try {
+      res = await fetch(DATA_URL);
+    } catch (err) {
+      console.error(err);
+      showError(
+        "Could not reach the data file.",
+        `Fetching ${DATA_URL} failed. Serve this page over HTTP (python3 -m http.server) rather than opening the file directly.`,
+      );
+      return;
     }
+
+    if (!res.ok) {
+      showError(
+        `Could not load the data file (${res.status}).`,
+        `${DATA_URL} was not found. Run "python3 app.py" to generate it, then reload.`,
+      );
+      return;
+    }
+
+    try {
+      data = await res.json();
+    } catch (err) {
+      console.error(err);
+      showError(
+        "The data file could not be parsed.",
+        `${DATA_URL} is not valid JSON. Re-run "python3 app.py" to regenerate it.`,
+      );
+      return;
+    }
+
+    years = data.years || [];
+
+    let sample = null;
+    for (const y of years) {
+      const frame = data.byYear?.[String(y)] || [];
+      if (frame.length) {
+        sample = frame[0];
+        break;
+      }
+    }
+    if (!sample) {
+      showError(
+        "No data found.",
+        "bubble_data.json contains no records under byYear.",
+      );
+      return;
+    }
+
+    keys = detectSchema(sample);
+
+    const missing = [];
+    if (!keys.nameKey) missing.push("country name key (area/country/name)");
+    if (!keys.xKey) missing.push("x key");
+    if (!keys.yKey) missing.push("y key");
+    if (!keys.codeKey && !keys.nameKey) missing.push("id key (code or name)");
+
+    if (missing.length) {
+      showError("Schema detection failed.", `Missing ${missing.join(", ")}.`);
+      console.log("Sample datum:", sample);
+      console.log("Detected keys:", keys);
+      return;
+    }
+
+    yearIndex = 0;
+    yearSlider.min = 0;
+    yearSlider.max = Math.max(0, years.length - 1);
+    yearSlider.value = yearIndex;
+
+    computeDomains();
+
+    const ind = data.meta?.indicators;
+    if (ind) {
+      xLabel.text(`${ind.x.Item} - ${ind.x.Element} (${ind.x.Unit})`);
+      yLabel.text(`${ind.y.Item} - ${ind.y.Element} (${ind.y.Unit})`);
+    } else {
+      xLabel.text(keys.xKey);
+      yLabel.text(keys.yKey);
+    }
+
+    renderYear(years[0], false);
+    setButtons(false);
+    hideStatus();
+  } catch (err) {
+    console.error(err);
+    showError("Something went wrong while building the chart.", err.message);
   }
-  if (!sample) {
-    meta.textContent = "No data found in byYear.";
-    return;
-  }
-
-  keys = detectSchema(sample);
-
-  const missing = [];
-  if (!keys.nameKey) missing.push("country name key (area/country/name)");
-  if (!keys.xKey) missing.push("x key");
-  if (!keys.yKey) missing.push("y key");
-  if (!keys.codeKey && !keys.nameKey) missing.push("id key (code or name)");
-
-  if (missing.length) {
-    meta.textContent = `Schema detection failed: missing ${missing.join(
-      ", ",
-    )}.`;
-    console.log("Sample datum:", sample);
-    console.log("Detected keys:", keys);
-    return;
-  }
-
-  yearIndex = 0;
-  yearSlider.min = 0;
-  yearSlider.max = Math.max(0, years.length - 1);
-  yearSlider.value = yearIndex;
-
-  computeDomains();
-
-  const ind = data.meta?.indicators;
-  if (ind) {
-    xLabel.text(`${ind.x.Item} - ${ind.x.Element} (${ind.x.Unit})`);
-    yLabel.text(`${ind.y.Item} - ${ind.y.Element} (${ind.y.Unit})`);
-  } else {
-    xLabel.text(keys.xKey);
-    yLabel.text(keys.yKey);
-  }
-
-  renderYear(years[0], false);
-  setButtons(false);
 })();
