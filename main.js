@@ -47,6 +47,14 @@ function niceValue(v) {
   return fmtNum(v);
 }
 
+function flagNote(d, valueKey) {
+  if (!valueKey) return "";
+  const code = d[`${valueKey}f`];
+  if (!code) return "";
+  const desc = data?.meta?.flags?.[code] ?? code;
+  return ` <span class="flag">${desc}</span>`;
+}
+
 function firstExistingKey(obj, keys) {
   for (const k of keys) if (k in obj) return k;
   return null;
@@ -358,13 +366,13 @@ function renderYear(year, animate) {
             } <span class="muted">(${k})</span></div>
             <div class="row"><span class="muted">x:</span> ${niceValue(
               keys.xKey ? +d[keys.xKey] : null,
-            )}</div>
+            )}${flagNote(d, keys.xKey)}</div>
             <div class="row"><span class="muted">y:</span> ${niceValue(
               keys.yKey ? +d[keys.yKey] : null,
-            )}</div>
+            )}${flagNote(d, keys.yKey)}</div>
             <div class="row"><span class="muted">r:</span> ${niceValue(
               keys.rKey ? +d[keys.rKey] : null,
-            )}</div>
+            )}${flagNote(d, keys.rKey)}</div>
           `;
       showTooltip(html, event.clientX, event.clientY);
     })
@@ -433,7 +441,9 @@ function renderYear(year, animate) {
       return;
     }
 
-    years = data.years || [];
+    years = (data.years || []).filter(
+      (y) => (data.byYear?.[String(y)] || []).length > 0,
+    );
 
     let sample = null;
     for (const y of years) {
